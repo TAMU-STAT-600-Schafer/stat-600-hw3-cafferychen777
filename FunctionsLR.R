@@ -93,5 +93,43 @@ LRMultiClass <- function(X, y, Xt, yt, numIter = 50, eta = 0.1, lambda = 1, beta
   error_test[1] <- calculate_error(probs_test, yt)
   objective[1] <- calculate_objective(probs_train, y, beta, lambda)
   
-  # Rest of the function will be implemented in next parts
+  ## Newton's method iterations
+  ##########################################################################
+  for(iter in 1:numIter) {
+    # Calculate probabilities on training data
+    probs <- calculate_probs(X, beta)
+    
+    # Update beta for each class
+    for(k in 1:K) {
+      # Calculate W_k diagonals
+      w_k <- probs[,k] * (1 - probs[,k])
+      
+      # Compute Xw efficiently
+      Xw <- X * sqrt(w_k)
+      
+      # Compute Hessian using crossprod
+      XtWX <- crossprod(Xw)
+      diag(XtWX) <- diag(XtWX) + lambda  # Regularization
+      
+      # Compute gradient
+      residuals_k <- probs[,k] - (y == (k - 1))
+      gradient <- t(X) %*% residuals_k + lambda * beta[,k]
+      
+      # Solve for delta_beta using Cholesky decomposition
+      L <- chol(XtWX)
+      delta_beta <- backsolve(L, forwardsolve(t(L), gradient))
+      
+      # Update beta_k
+      beta[,k] <- beta[,k] - eta * delta_beta
+    }
+    
+    # Calculate updated probabilities and metrics
+    probs_train <- calculate_probs(X, beta)
+    probs_test <- calculate_probs(Xt, beta)
+    error_train[iter + 1] <- calculate_error(probs_train, y)
+    error_test[iter + 1] <- calculate_error(probs_test, yt)
+    objective[iter + 1] <- calculate_objective(probs_train, y, beta, lambda)
+  }
+  
+  # Rest of the function will be implemented in the final part
 }
