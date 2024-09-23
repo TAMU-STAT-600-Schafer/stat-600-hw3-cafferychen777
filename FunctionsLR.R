@@ -131,5 +131,10 @@ LRMultiClass <- function(X, y, Xt, yt, numIter = 50, eta = 0.1, lambda = 1, beta
     objective[iter + 1] <- calculate_objective(probs_train, y, beta, lambda)
   }
   
-  # Rest of the function will be implemented in the final part
+  ## Return output
+  ##########################################################################
+  return(list(beta = beta, 
+              error_train = error_train, 
+              error_test = error_test, 
+              objective = objective))
 }
