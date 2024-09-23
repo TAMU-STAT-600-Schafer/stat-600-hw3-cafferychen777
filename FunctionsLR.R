@@ -17,36 +17,45 @@
 # error_test - (numIter + 1) length vector of testing error % at each iteration (+ starting value)
 # objective - (numIter + 1) length vector of objective values of the function that we are minimizing at each iteration (+ starting value)
 LRMultiClass <- function(X, y, Xt, yt, numIter = 50, eta = 0.1, lambda = 1, beta_init = NULL){
-  ## Check the supplied parameters as described. You can assume that X, Xt are matrices; y, yt are vectors; and numIter, eta, lambda are scalars. You can assume that beta_init is either NULL (default) or a matrix.
+  ## Check the supplied parameters
   ###################################
-  # Check that the first column of X and Xt are 1s, if not - display appropriate message and stop execution.
+  # Check that the first column of X and Xt are 1s
+  if(!all(X[,1] == 1) || !all(Xt[,1] == 1)) {
+    stop("First column of X and Xt must be 1s for intercept.")
+  }
   
-  # Check for compatibility of dimensions between X and Y
+  # Dimension checks
+  if(nrow(X) != length(y)) {
+    stop("Number of rows in X must match length of y.")
+  }
+  if(nrow(Xt) != length(yt)) {
+    stop("Number of rows in Xt must match length of yt.")
+  }
+  if(ncol(X) != ncol(Xt)) {
+    stop("Number of columns in X and Xt must be the same.")
+  }
   
-  # Check for compatibility of dimensions between Xt and Yt
+  # Check eta and lambda
+  if(eta <= 0) {
+    stop("Learning rate eta must be positive.")
+  }
+  if(lambda < 0) {
+    stop("Ridge parameter lambda must be non-negative.")
+  }
   
-  # Check for compatibility of dimensions between X and Xt
+  # Determine number of classes K
+  K <- length(unique(y))
   
-  # Check eta is positive
+  # Initialize beta
+  p <- ncol(X)
+  if(is.null(beta_init)) {
+    beta <- matrix(0, nrow = p, ncol = K)
+  } else {
+    if(nrow(beta_init) != p || ncol(beta_init) != K) {
+      stop("Dimensions of beta_init are incompatible.")
+    }
+    beta <- beta_init
+  }
   
-  # Check lambda is non-negative
-  
-  # Check whether beta_init is NULL. If NULL, initialize beta with p x K matrix of zeroes. If not NULL, check for compatibility of dimensions with what has been already supplied.
-  
-  ## Calculate corresponding pk, objective value f(beta_init), training error and testing error given the starting point beta_init
-  ##########################################################################
-  
-  ## Newton's method cycle - implement the update EXACTLY numIter iterations
-  ##########################################################################
- 
-  # Within one iteration: perform the update, calculate updated objective function and training/testing errors in %
-  
-  
-  ## Return output
-  ##########################################################################
-  # beta - p x K matrix of estimated beta values after numIter iterations
-  # error_train - (numIter + 1) length vector of training error % at each iteration (+ starting value)
-  # error_test - (numIter + 1) length vector of testing error % at each iteration (+ starting value)
-  # objective - (numIter + 1) length vector of objective values of the function that we are minimizing at each iteration (+ starting value)
-  return(list(beta = beta, error_train = error_train, error_test = error_test, objective =  objective))
+  # Rest of the function will be implemented in next parts
 }
