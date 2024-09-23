@@ -57,5 +57,29 @@ LRMultiClass <- function(X, y, Xt, yt, numIter = 50, eta = 0.1, lambda = 1, beta
     beta <- beta_init
   }
   
+  ## Helper functions
+  ##########################################################################
+  # Calculate probabilities
+  calculate_probs <- function(X, beta) {
+    exp_vals <- exp(X %*% beta)
+    probs <- exp_vals / rowSums(exp_vals)
+    return(probs)
+  }
+  
+  # Calculate objective value
+  calculate_objective <- function(probs, y, beta, lambda) {
+    indices <- cbind(seq_len(nrow(probs)), y+1)
+    log_likelihood <- sum(log(probs[indices]))
+    regularization <- (lambda/2) * sum(beta^2)
+    return(-log_likelihood + regularization)
+  }
+  
+  # Calculate classification error
+  calculate_error <- function(probs, y) {
+    predictions <- max.col(probs) - 1
+    error_rate <- mean(predictions != y) * 100
+    return(error_rate)
+  }
+  
   # Rest of the function will be implemented in next parts
 }
