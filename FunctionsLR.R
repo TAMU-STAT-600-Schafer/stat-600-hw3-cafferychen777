@@ -81,5 +81,17 @@ LRMultiClass <- function(X, y, Xt, yt, numIter = 50, eta = 0.1, lambda = 1, beta
     return(error_rate)
   }
   
+  # Initialize vectors to store errors and objective values
+  error_train <- numeric(numIter + 1)
+  error_test <- numeric(numIter + 1)
+  objective <- numeric(numIter + 1)
+  
+  # Calculate initial probabilities and metrics
+  probs_train <- calculate_probs(X, beta)
+  error_train[1] <- calculate_error(probs_train, y)
+  probs_test <- calculate_probs(Xt, beta)
+  error_test[1] <- calculate_error(probs_test, yt)
+  objective[1] <- calculate_objective(probs_train, y, beta, lambda)
+  
   # Rest of the function will be implemented in next parts
 }
